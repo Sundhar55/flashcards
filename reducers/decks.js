@@ -1,6 +1,6 @@
 //reducers/decks.js
 
-import {RECEIVE_DECKS,ADD_DECK} from '../actions/index'
+import {RECEIVE_DECKS,ADD_DECK, REMOVE_DECK} from '../actions/index'
 
 export function decks(state={}, action){
     switch(action.type){
@@ -14,6 +14,11 @@ export function decks(state={}, action){
                 ...state,
                 ...action.deck,
 
+            }
+        case REMOVE_DECK : 
+            return {
+                ...state,
+                ...action.deck
             }
 
         default :

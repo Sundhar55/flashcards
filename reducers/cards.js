@@ -7,7 +7,7 @@ function cards(state={}, action){
         case ADD_CARD : 
             return{
                 ...state,
-                ...action.decks,
+                ...action.card,
             }
         
         default :

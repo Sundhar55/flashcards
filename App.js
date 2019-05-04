@@ -13,6 +13,7 @@ import {createStore} from 'redux'
 import {Provider} from 'react-redux'
 import reducer from './reducers'
 import middleware from './middleware';
+import {setLocalNotification} from './utils/helpers'
 
 const store = createStore(reducer, middleware)
 function UdaciStatusBar({backgroundColor , ...props}){
@@ -108,9 +109,11 @@ const MainStacksNavigator = createStackNavigator({
 const AllTabs = createAppContainer(MainStacksNavigator)
 
 export default class App extends React.Component {
+  componentDidMount(){
+    setLocalNotification()
+  }
+
   render() {
-    console.log('store is ', store)
-  
     return (
       <Provider store={store}>
         <View style={{flex:1}}>

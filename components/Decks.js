@@ -7,7 +7,7 @@ import {getDecks,removeEntry} from '../utils/api'
 import DeckDetails from './DeckDetails'
 import {connect} from 'react-redux'
 import {receiveDecks, RECEIVE_DECKS, getInitialData} from '../actions/index'
-
+import Spinner from 'react-native-loading-spinner-overlay'
 
 class Decks extends React.Component{
     constructor(props){
@@ -26,77 +26,62 @@ class Decks extends React.Component{
              ],
              DeckObj : {
      
-             }
+             },
+             spinner : false
         }
     }
 
     
     
     componentWillReceiveProps = (nextProps) => {
-        console.log('in props decks ')
-        console.log('---------after adding in Decks------------')
-        //var sp = nextProps.navigation.state.para
+        
         var deckData =  getDecks().then(result => {
             s = result
             this.setState({DeckObj : result})
-          //  console.log('state is ', this.state.DeckObj)
-        })
         
-        console.log('new state is ', this.state.DeckObj)
+        })
         
     }
     componentDidUpdate = ()=> {
-        console.log('com did update')
+        
     }
     componentDidMount = ()=> {
         var decks = this.props.decks
-        //var cards = this.props.cards
         var dispatch = this.props.dispatch
         dispatch(getInitialData())
-        //tryd.then(result => {
-        //    console.log('tryd result ', result)
-        // })
-        console.log('comp did mount redux decks ', decks)
-        //console.log('comp did mount redux decks 2 ', tryd)
-        
-       // console.log('comp did mount redux cards2 ', cards)
         var s = {}
-        removeEntry()
-      var deckData =  getDecks().then(result => {
+        var deckData =  getDecks().then(result => {
           s = result
           this.setState({DeckObj : result})
-        //  console.log('state is ', this.state.DeckObj)
-      })
-      
-      console.log('data in Decks is from s : ', s)
+        
+        })
       
     }
 
     showDeck = (navigation, value) =>{
-        //navigation.setParams({screenTitle : value })
         navigation.navigate('DeckDetails', {screenTitle : value , id : value})
     }
     render(){
         var s = {}
-        //console.log('render')
         var qwert = getDecks().then(result => {
-            //console.log('inside s ', result)
             s= result
-           // console.log('inside s ', s)
         })
         var decks = this.state.DeckObj                        
-        //var decks = s;
         var sp = Object.keys(decks)
-        //console.log('spis ', sp)
         return(
             <View>
+                <Spinner
+                    visible={this.state.spinner}
+                    textContent={'Loading...'}
+                    textStyle={styles.spinnerTextStyle}
+                />
                 <ScrollView>
                 
                 { 
                     Object.keys(decks).map((key)=>{
                        
                        return( 
-                        <View>                                
+                        <View key={key}>                                
                             <View>
                                 <TouchableOpacity
                                 key = {key}
@@ -138,7 +123,6 @@ class Decks extends React.Component{
 }
 
 function mapStateToProps({decks,cards}){
-    console.log('mapstate ' , decks )
     return{
         decks : decks,
         cards: cards,
@@ -152,11 +136,15 @@ const styles = StyleSheet.create ({
        flexDirection: 'row',
        justifyContent: 'space-between',
        alignItems: 'center',
-       padding: 30,
+       padding: 20,
        margin: 2,
-       borderColor: '#2a4944',
+       alignItems : 'center',
+       borderColor: '#f5f5f5',
        borderWidth: 1,
-       backgroundColor: '#d2f7f1',
+       backgroundColor: 'white',
        textAlign : 'center'
-    }
+    },
+    spinnerTextStyle: {
+        color: '#FFF'
+    },
  })

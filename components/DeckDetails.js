@@ -1,9 +1,11 @@
 //component/DeckDetails.js
 
 import React from 'react'
-import {View,Text, StyleSheet, TouchableOpacity} from 'react-native'
+import {View,Text, StyleSheet, TouchableOpacity, Animated} from 'react-native'
 import {getDeck,removeEntry, getDecks} from '../utils/api'
 import {connect} from 'react-redux'
+import Spinner from 'react-native-loading-spinner-overlay'
+import { handleDeleteDeck } from '../actions';
 
 class DeckDetails extends React.Component{
     constructor(props){
@@ -11,7 +13,9 @@ class DeckDetails extends React.Component{
         this.state = {
             id : '',
             deckItem : {},
-            questionsObj : {}
+            questionsObj : {},
+            spinner : false,
+            opacity : new Animated.Value(0)
         }
         
         
@@ -23,120 +27,84 @@ class DeckDetails extends React.Component{
         }
     }
     onRefresh =(prop) =>{
-        console.log('=====refresh==========', prop , '0000')
+        
     }
     addCard = (navigation) => {
-        console.log('acard')
         const deckTitle =  this.state.id
-        console.log('------------add card-----------------', deckTitle)
         navigation.navigate('AddCard', {deckTitle : deckTitle, onRefresh : this.onRefresh})
     }
 
     startQuiz = (navigation) => {
         const questObj = this.state.deckItem.questions
-
         navigation.navigate('Quiz', {id : this.state.id, questions : questObj })
     }
 
     deleteDeck = (navigation) => {
-        console.log('delete deck', this.state.id)
         this.remove()
-        console.log("after deleting in deckdetails ")
         /*
         var deckDaa =  getDecks().then(result => {
             s = result
             this.setState({deckObj : result})
-            console.log('delete a deck ', this.state.deckObj)
+            
         }) , this.state.deckObj
         */
         navigation.navigate('Decks')
     }
     async remove(){
-        removeEntry(this.state.id)
+        const dispatch= this.props.dispatch
+         dispatch(handleDeleteDeck(this.state.id))
+        
     }
-    componentWillReceiveContext=(props)=>{
-        console.log('-------------')
-    }
-    
     componentWillReceiveProps = (nextProps) => {
-        console.log('in props decks details =====,', nextProps.sendDeck)
-        console.log('---------after adding card in Decks in deckDetails-----------------------------')
-        //var sp = nextProps.navigation.state.para
+        this.setState({spinner : !this.state.spinner})
         var id = this.state.id
         var deckitem =  getDeck(id).then(result => {
             s = result
             this.setState({deckItem : result})
-          //  console.log('state is ', this.state.DeckObj)
         })
         var deck = this.state.deckItem
-        console.log('decks is did update---------------------------', deck)
         this.setState({questionsObj : deck.questions }) 
         
-        console.log('new state is ', this.state.id)
     }
-    /*componentDidUpdate=()=>{
-        console.log('-----------------------------updated deck details----------------------------------')
-        
-        
-
-    } */
-    shouldComponentUpdate=(props)=>{
-        console.log('-----------------------------should comp update-------------------')
-        console.log('111--- ', props.update, '----')
-        return true
-    }
-    fetchData (){
-          console.log('fetchData')
-      }
+    
     componentDidMount= ()=> {
         const deckId =  this.props.navigation.state.params.id
         this.setState({id:deckId})
-        //var sp = this.getDectItem(deckId).then(result => this.setState({deckItem : result}))
         const deckItem = getDeck(deckId).then(result => {
             this.setState({deckItem : result})
         })
         var deck = this.state.deckItem
-        console.log('decks is ---------------------------', deck)
         this.setState({questionsObj : deck.questions }) 
 
-        /*this.props.fetchData();
-        this.willFocusSubscription = this.props.navigation.addListener(
-        'willFocus',
-        () => {
-            this.props.fetchData();
-        }
-        );
-        */
-        
+        const opacity  = this.state.opacity
+        Animated.timing(opacity,{toValue:1 , duration:1500})
+            .start()
     }
-    /*async getDectItem(deckId){
-        var r =''
-        const deckItem = getDeck(deckId).then(result => {
-            console.log('result ' , result)
-            r = result
-            this.setState({deckItem : result})
-            
-        })
-        return r
-        
-    }
-    */
+    
     render(){
        const deck = this.state.deckItem
+       const opacity = this.state.opacity
        var totalCards = 0
-       var title = deck.title === undefined ? "Eror in getting deck" : deck.title
+       var title = ""
+       if(deck !==  undefined)
+            title = deck.title === 'undefined' ? "Eror in getting deck" : deck.title
        
-       if(deck.questions != undefined)
+       if(deck !== undefined &&  deck.questions != undefined)
             totalCards =  deck.questions.length
         return(
             <View>
-                <Text style = {styles.item} >
+                <Spinner
+                    visible={this.state.spinner}
+                    textContent={'Loading...'}
+                    textStyle={styles.spinnerTextStyle}
+                />
+                <Animated.Text style = {[styles.item,{opacity}]} >
                     {title} {"\n"}
                     <Text >
                         {totalCards} cards
                     </Text>
                     <Text></Text>
-                </Text>
+                </Animated.Text>
                 <View>
                     <TouchableOpacity
                         style = {styles.button}
@@ -153,11 +121,12 @@ class DeckDetails extends React.Component{
                         <Text style = {styles.buttonText}> Delete Deck </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        style = {styles.button}
+                        style = {styles.buttonQuiz}
+                        type='outline'
                         onPress = {
                             () => this.startQuiz(this.props.navigation)
                         }>
-                        <Text style = {styles.buttonText}> start quiz </Text>
+                        <Text style = {styles.quizText} > start quiz </Text>
                     </TouchableOpacity>
                 </View>
                 
@@ -191,6 +160,18 @@ const styles = StyleSheet.create({
        height: 40,
        
     },
+    buttonQuiz: {
+        padding: 10,
+        margin: 35,
+        height: 70,
+        
+     },
+    quizText: {
+        color: '#7a42f4',
+       textAlign : 'center',
+       fontSize : 30,
+
+     },
     buttonText:{
        color: 'white',
        textAlign : 'center',
@@ -213,9 +194,10 @@ const styles = StyleSheet.create({
         padding: 30,
         borderColor: '#2a4944',
         textAlign : 'center'
-     }
-
-
+     },
+    spinnerTextStyle: {
+        color: '#FFF'
+      },
  })
   
   

@@ -1,6 +1,7 @@
 //components/Quiz.js
  import React from 'react'
  import {Text, View, StyleSheet, TouchableOpacity} from 'react-native'
+ import {clearLocalNotification , setLocalNotification} from '../utils/helpers'
 
  class Quiz extends React.Component{
      constructor(props){
@@ -24,11 +25,17 @@
     }
     submitAnswer = (answer) =>{
         var j = this.state.correctAns
+        var i = this.state.qno
         if(answer){
-            this.setState({correctAns : ++j})
+            this.setState({
+                correctAns : ++j,
+            })
         }
-
+        this.setState({qno : ++i})
+        clearLocalNotification()
+            .then(setLocalNotification)
     }
+
     showNext = (navigation) => {
         var i = this.state.qno
         this.setState({qno : ++i})
@@ -43,6 +50,7 @@
         this.setState({
             over : !false,
             qno : 0,
+            correctAns : 0
             
         })
     }
@@ -66,7 +74,6 @@
             over = true;
          }
         const showAns = this.state.showAnswer
-         console.log('questions s --- ',quest, 'over flag ', over, ' qno ', qno, 'show ans ', this.state.showAnswer)
          return(
 
             
@@ -74,22 +81,19 @@
                 {qLength === 0 
                     ?
                     <View>
-                    <Text style = {styles.textQstn}>
+                    <Text style = {styles.noQstn}>
                         Sorry, no questions to take quiz. kindly go back.
                     </Text>
                     </View> 
                     :
                     <View>
-                        <Text> Lets begin</Text>
-                        <Text style={styles.textRmQstn}>Unanswered : {remQstn}</Text>
+                        {(!over) ? <Text style={styles.textRmQstn}>Quiz : {qno+1} / {qLength}</Text> : null}
                         <Text></Text>
                         <View>
-                            
-                                {(questions !== undefined && !over)? <Text> ert {quest.question} </Text> 
+                                {(questions !== undefined && !over)? <Text style={styles.textQstn}>  {quest.question} </Text> 
                                 : 
                                     <View>
-                                    <Text> ALL QUESTIONS are over {"\n"} Do you want to start the quiz again ? </Text>
-                                    <Text> Questions answered correctly : {correctAnswers}</Text>
+                                    <Text style={styles.textQstn}> Questions answered correctly : {correctAnswers}</Text>
                                     <TouchableOpacity
                                         style = {styles.nextQstnButton}
                                         onPress = {
@@ -99,41 +103,46 @@
                                     </TouchableOpacity>
                                     </View>
                                      }
+                            
                             {!over ? 
-                                <View>
+                                <View >
                                     <TouchableOpacity
                                         style = {styles.showAnswerButton}
                                         onPress = {() => this.showAnswer( this.props.navigation)}
                                     >
-                                        <Text style = {styles.submitButtonText}> {showAns ? 'Hide Answer' : 'Show Answer'}  </Text>
+                                        <Text style = {styles.showAnserButnText}> {showAns ? 'Hide Answer' : 'Show Answer'}  </Text>
                                     </TouchableOpacity> 
+                                    <View>
+                                        {showAns && !over ? <Text style={styles.textAnsr}>{quest.answer}</Text> : null} 
+                                    </View>
+                                    <View style={styles.bottom}>
+                                        <TouchableOpacity
+                                            style = {styles.correctButton}
+                                            onPress = {() => this.submitAnswer(true)}
+                                        >
+                                            <Text style = {styles.submitButtonText}> Correct  </Text>
+                                        </TouchableOpacity>
 
-                                    <TouchableOpacity
-                                        style = {styles.showAnswerButton}
-                                        onPress = {() => this.submitAnswer(true)}
-                                    >
-                                        <Text style = {styles.submitButtonText}> Correct  </Text>
-                                    </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style = {styles.inCorrectButton}
+                                            onPress = { () => this.submitAnswer(false)
+                                        }>
+                                            <Text style = {styles.submitButtonText}> Incorrect  </Text>
+                                        </TouchableOpacity>
 
-                                    <TouchableOpacity
-                                        style = {styles.showAnswerButton}
-                                        onPress = { () => this.submitAnswer(false)
-                                    }>
-                                        <Text style = {styles.submitButtonText}> Incorrect  </Text>
-                                    </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style = {styles.nextQstnButton}
+                                            onPress = { () => this.showNext( this.props.navigation)}
+                                        >
+                                            <Text style = {styles.nextQstnButtonText}> Next  </Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    
+                                    
                                     
                                 </View>
                             : null }
                             
-                            {showAns && !over ? <Text>{quest.answer}</Text> : null}
-                            {!over ?
-                            <TouchableOpacity
-                                style = {styles.nextQstnButton}
-                                onPress = { () => this.showNext( this.props.navigation)}
-                            >
-                                <Text style = {styles.nextQstnButtonText}> Next  </Text>
-                            </TouchableOpacity>
-                            : null }
                         </View>
                     </View> 
                 }
@@ -147,15 +156,27 @@
  export default Quiz
 
  const styles = StyleSheet.create ({
-    textQstn: {
+    noQstn: {
        marginTop: 40,
        textAlign: 'center',
        color: 'black',
        fontWeight: 'bold',
        fontSize: 20
     },
+    textQstn :{
+        textAlign: 'center',
+        color: 'black',
+        fontWeight: 'bold',
+        fontSize: 20
+    },
+    textAnsr: {
+        textAlign: 'center',
+        color: 'blue',
+        fontWeight: 'bold',
+        fontSize: 20
+     },
     textRmQstn:{
-        marginLeft : 240,
+        marginLeft : 250,
         textAlign : 'right',
         color: 'red',
         backgroundColor : '#ADD8E6',
@@ -167,6 +188,9 @@
         padding: 10,
         margin: 15,
         height: 40,
+        marginLeft : 100,
+        width : 150,
+        
         
      },
      showAnswerButton : {
@@ -174,13 +198,46 @@
         padding: 10,
         margin: 15,
         height: 40,
+        marginLeft : 100,
+        width : 150
+     },
+     correctButton : {
+        backgroundColor: 'green',
+        padding: 10,
+        margin: 15,
+        height: 40,
+        marginLeft : 100,
+        width : 150,
+        
+     },
+     inCorrectButton : {
+
+        backgroundColor: 'red',
+        padding: 10,
+        margin: 'auto',
+        width: 150,
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginLeft : 100,
+        
+     },
+     showAnserButnText :{
+         color: 'black',
+         textAlign : 'center'
      },
      submitButtonText:{
-        color: 'black',
+        color: 'white',
         textAlign : 'center',
+
      },
      nextQstnButtonText :{
          color : 'white',
          textAlign : 'center',
+     },
+     bottom : {
+         marginTop : 80,
+         
+        
      }
  })

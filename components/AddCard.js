@@ -3,6 +3,7 @@ import React from 'react'
 import {View, Text, StyleSheet, TextInput, TouchableOpacity}  from 'react-native'
 import {addCardToDeck,getDeck} from '../utils/api'
 import {connect} from 'react-redux'
+import { handleAddCard } from '../actions';
 
 
 class AddCard extends React.Component{
@@ -15,7 +16,6 @@ class AddCard extends React.Component{
     
     static navigationOptions = ({navigation}) => {
         const {deckTitle } = navigation.state.params
-        console.log('screen title ', deckTitle)
         return {
             title : 'Add Card'    
         }
@@ -30,33 +30,23 @@ class AddCard extends React.Component{
     }
 
     submitCard = (id,navigation) => {
-        console.log('q and a is ', this.state.question , this.state.answer)
         var qstnObj = {
             answer : this.state.answer,
             question : this.state.question
         }
         const key = this.state.deckName
-        console.log('submit card ', id , qstnObj)
-        addCardToDeck(id, qstnObj)
+        const dispatch= this.props.dispatch
+            
+        dispatch(handleAddCard(id, qstnObj))
         var sendDeck = {}
         var id = this.state.deckName
-        console.log('---------------------------add card end ---------------')
         var deckitem =  getDeck(id).then(result => {
             s = result
-            sendDeck : result
-          //  console.log('state is ', this.state.DeckObj)
+            sendDeck = result
         })
-        console.log('befe navigate --------', sendDeck)
-        navigation.goBack()
-        navigation.state.params.onRefresh({})
-        //navigation.navigate('DeckDetails', {sendDeck})
-        
+        navigation.navigate('DeckDetails', {} )
     }
     componentDidMount= ()=> {
-       //const dName =   this.props.navigation.state.params.deckTitle
-       //this.setState({deckName : dName})
-       //this.setState({deckName : id})
-       //console.log('comp did mount addcard', this.state.deckName)
        
     }
     render(){
