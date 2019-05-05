@@ -29,16 +29,24 @@
         if(answer){
             this.setState({
                 correctAns : ++j,
+                
             })
         }
-        this.setState({qno : ++i})
+        this.setState({qno : ++i, showAnswer : false})
         clearLocalNotification()
             .then(setLocalNotification)
     }
 
+    goBack = (navigation) => {
+        navigation.navigate('DeckDetails',  {screenTitle : this.state.id , id : this.state.id} )
+    }
     showNext = (navigation) => {
+
         var i = this.state.qno
-        this.setState({qno : ++i})
+        this.setState({
+            qno : ++i ,
+            showAnswer : false
+        })
 
     }
     showAnswer = (navigation) => {
@@ -135,6 +143,13 @@
                                             onPress = { () => this.showNext( this.props.navigation)}
                                         >
                                             <Text style = {styles.nextQstnButtonText}> Next  </Text>
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity
+                                            style = {styles.nextQstnButton}
+                                            onPress = { () => this.goBack( this.props.navigation)}
+                                        >
+                                            <Text style = {styles.nextQstnButtonText}> Back to Deck  </Text>
                                         </TouchableOpacity>
                                     </View>
                                     

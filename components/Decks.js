@@ -13,17 +13,6 @@ class Decks extends React.Component{
     constructor(props){
         super(props)
         this.state = {
-            Decks: [
-                {
-                   id: 0,
-                   name: 'Deck1',
-                },
-                {
-                   id: 1,
-                   name: 'Deck2',
-                },
-                
-             ],
              DeckObj : {
      
              },
@@ -34,7 +23,7 @@ class Decks extends React.Component{
     
     
     componentWillReceiveProps = (nextProps) => {
-        
+        console.log('decks receive props -------------')
         var deckData =  getDecks().then(result => {
             s = result
             this.setState({DeckObj : result})

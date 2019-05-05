@@ -23,11 +23,14 @@ import {addDeck, ADD_DECK,handleAddDeck} from '../actions/index'
     }
     submitDeck =(text, navigation)=>{
 
+        if(!text) { 
+            return alert("Add the Deck Name")
+       }
         var entry = {title: text , questions : []}
         const dispatch= this.props.dispatch
-        //dispatch(handleAddDeck(text,entry))
+        dispatch(handleAddDeck(text,entry))
         
-        saveDeckTitle(text,entry )
+        //saveDeckTitle(text,entry )
         var deckDaa =  getDecks().then(result => {
             s = result
             this.setState({deckObj : result})
@@ -52,7 +55,7 @@ import {addDeck, ADD_DECK,handleAddDeck} from '../actions/index'
                 <TouchableOpacity
                     style = {styles.submitButton}
                     onPress = {
-                        () => this.submitDeck(this.state.deckValue , this.props.navigation)
+                        () => this.submitDeck(this.state.text , this.props.navigation)
                     }>
                     <Text style = {styles.submitButtonText}> Create Deck </Text>
                 </TouchableOpacity>

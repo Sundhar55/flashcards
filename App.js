@@ -14,6 +14,8 @@ import {Provider} from 'react-redux'
 import reducer from './reducers'
 import middleware from './middleware';
 import {setLocalNotification} from './utils/helpers'
+import {getDecks,} from './utils/api'
+
 
 const store = createStore(reducer, middleware)
 function UdaciStatusBar({backgroundColor , ...props}){
@@ -27,10 +29,18 @@ function UdaciStatusBar({backgroundColor , ...props}){
 const Tabs = createBottomTabNavigator({
   Decks : {
     screen : Decks,
+    screenProps: {screenName : Decks},
     navigationOptions : {
       tabBarLabel :  'Decks',
-      tabBarIcon : ({tintColor}) => <Ionicons name = 'ios-bookmarks' size={30} color={tintColor} />
-
+      tabBarIcon : ({tintColor}) => <Ionicons name = 'ios-bookmarks' size={30} color={tintColor} />,
+      /*tabBarOnPress : (navigation) => {
+        var DeckObj
+        var deckData =  getDecks().then(result => {
+          DeckObj = result
+      
+        })
+        
+      } */
     },
   },
   AddNewDeck : {

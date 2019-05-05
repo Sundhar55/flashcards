@@ -54,7 +54,6 @@ class AddCard extends React.Component{
         
         return(
             <View>
-                <Text>AddCard </Text>
                 <TextInput style={styles.input} placeholder="question"  editable={true} maxLength={40} 
                     onChangeText={this.handleQuestion} />
                 

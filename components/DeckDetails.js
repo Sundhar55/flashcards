@@ -56,7 +56,7 @@ class DeckDetails extends React.Component{
         
     }
     componentWillReceiveProps = (nextProps) => {
-        this.setState({spinner : !this.state.spinner})
+        //this.setState({spinner : !this.state.spinner})
         var id = this.state.id
         var deckitem =  getDeck(id).then(result => {
             s = result
@@ -154,7 +154,8 @@ const styles = StyleSheet.create({
        borderWidth: 1
     },
     button: {
-       backgroundColor: '#7a42f4',
+       //backgroundColor: '#7a42f4',
+       backgroundColor: 'purple',
        padding: 10,
        margin: 15,
        height: 40,
