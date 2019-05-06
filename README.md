@@ -40,3 +40,6 @@ The project can be run using the below command for expo
 $ expo start
 
 once the above command is run, you can have the project running in your expo.
+
+
+Have developed and tested the app using expo app for ios.
