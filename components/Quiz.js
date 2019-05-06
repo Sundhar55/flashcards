@@ -109,6 +109,15 @@
                                         }>
                                         <Text style = {styles.nextQstnButtonText}> Start Again </Text>
                                     </TouchableOpacity>
+
+                                    
+                                    <TouchableOpacity
+                                            style = {styles.nextQstnButton}
+                                            onPress = { () => this.goBack( this.props.navigation)}
+                                        >
+                                            <Text style = {styles.nextQstnButtonText}> Back to Deck  </Text>
+                                    </TouchableOpacity>
+
                                     </View>
                                      }
                             
@@ -145,12 +154,6 @@
                                             <Text style = {styles.nextQstnButtonText}> Next  </Text>
                                         </TouchableOpacity>
 
-                                        <TouchableOpacity
-                                            style = {styles.nextQstnButton}
-                                            onPress = { () => this.goBack( this.props.navigation)}
-                                        >
-                                            <Text style = {styles.nextQstnButtonText}> Back to Deck  </Text>
-                                        </TouchableOpacity>
                                     </View>
                                     
                                     

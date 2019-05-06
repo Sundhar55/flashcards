@@ -37,9 +37,17 @@ class AddCard extends React.Component{
         const key = this.state.deckName
         const dispatch= this.props.dispatch
             
+        
+        const { answer, question} = this.state
+        if(!answer || !question) {
+            return alert("enter both field")
+        }
         dispatch(handleAddCard(id, qstnObj))
         var sendDeck = {}
         var id = this.state.deckName
+
+
+
         var deckitem =  getDeck(id).then(result => {
             s = result
             sendDeck = result
